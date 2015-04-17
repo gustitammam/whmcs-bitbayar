@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This is WHMCS module using BitBayar payment gateway
+ * WHMCS module to receive bitcoin payment using BitBayar (Bitcoin payment processor)
  * Author : Gusti Tammam
  * URL : http://www.tammam.web.id
  * Release Date: 2015.04.17
@@ -14,7 +14,7 @@
  * Website: http://www.whmcs.com
  */
 /*
- * BitBayar - Indonesian Bitcoin Payment Gateway
+ * BitBayar - Indonesian Bitcoin payment processor
  * Website: https://bitbayar.com
  */
 
