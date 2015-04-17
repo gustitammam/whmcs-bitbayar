@@ -27,6 +27,7 @@ include("../../../includes/invoicefunctions.php");
 $gatewaymodule = "bitbayar";
 
 $GATEWAY = getGatewayVariables($gatewaymodule);
+$gatewayapi = $GATEWAY['apibitbayar'];
 if (!$GATEWAY["type"]) die("Module Not Activated"); # Checks gateway module is active before accepting callback
 
 $invoiceid = $_POST["invoice_id"];
@@ -39,9 +40,26 @@ $invoiceid = checkCbInvoiceID($invoiceid,$GATEWAY["name"]); # Checks invoice ID 
 checkCbTransID($transid); # Checks transaction number isn't already in the database and ends processing if it does
 
 if ($transid) {
-    # Successful
-    addInvoicePayment($invoiceid,$transid,$amount,$fee,$gatewaymodule); # Apply Payment to Invoice: invoiceid, transactionid, amount paid, fees, modulename
-    logTransaction($GATEWAY["name"],$_POST,"Successful"); # Save to Gateway Log: name, data array, status
+
+    $data = array(
+      'token'=>$gatewayapi,
+      'id'=>$transid
+    );
+    $url = 'https://bitbayar.com/api/check_invoice';
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+    $return = curl_exec($ch);
+    curl_close($ch);
+    $data = json_decode($return);
+
+    if ($data->status == "paid") { # make sure payment is valid
+      # Successful
+      addInvoicePayment($invoiceid,$transid,$amount,$fee,$gatewaymodule); # Apply Payment to Invoice: invoiceid, transactionid, amount paid, fees, modulename
+      logTransaction($GATEWAY["name"],$_POST,"Successful"); # Save to Gateway Log: name, data array, status
+    }
 } else {
 	# Unsuccessful
     logTransaction($GATEWAY["name"],$_POST,"Unsuccessful"); # Save to Gateway Log: name, data array, status
