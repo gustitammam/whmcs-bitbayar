@@ -33,4 +33,4 @@ http://opensource.org/licenses/MIT
 
 #Author
 ## Gusti Tammam
-Website : [www.tammam.web.id](http://www.tammam.web.id)
+Website : [tammam.id](http://tammam.id)
